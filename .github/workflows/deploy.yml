@@ -136,7 +136,7 @@ jobs:
       - name: 'Deploy Deployment Configuration'
         uses: appleboy/scp-action@master
         with:
-          host: 140.238.194.213
+          host: ${{ env.INSTANCE_IP }}
           username: opc
           key: ${{ secrets.OCI_KEY_FILE }}
           source: "docker-compose.yaml"
