@@ -92,8 +92,27 @@ jobs:
             oci compute instance list \
             --lifecycle-state RUNNING \
             --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
-            --display-name vm-ubuntu1 \
+            --display-name system_sales \
             --query "data [0].id" \
+            --raw-output \
+            )" >> $GITHUB_ENV
+
+      - name: 'Create Instance'
+        if: ${{!env.INSTANCE_OCID}}
+        run: |
+          echo "INSTANCE_OCID=$( \
+            oci compute instance launch \
+            -c ${{secrets.VM_COMPARTMENT_OCID}} \
+            --availability-domain ${{secrets.VM_AVAILABILITY_DOMAIN}} \
+            --shape ${{secrets.VM_SHAPE}} \
+            --shape-config '{"memoryInGBs": 1, "ocpus": 1}' \
+            --assign-public-ip true \
+            --display-name system_sales \
+            --image-id ${{secrets.VM_CUSTOM_IMAGE_OCID}} \
+            --ssh-authorized-keys-file /home/runner/.oci/oci_api_key_public.pem \
+            --subnet-id ${{secrets.VM_SUBNET_OCID}} \
+            --wait-for-state RUNNING \
+            --query "data.id" \
             --raw-output \
             )" >> $GITHUB_ENV
 
@@ -101,7 +120,7 @@ jobs:
         run: |
           echo "INSTANCE_IP=$( \
             oci compute instance list-vnics \
-            --instance-id ${{secrets.OCI_INSTANCE_OCID}} \
+            --instance-id ${{env.INSTANCE_OCID}} \
             --query 'data [0]."public-ip"' \
             --raw-output \
             )" >> $GITHUB_ENV
@@ -113,13 +132,13 @@ jobs:
           sleep 5
           echo "SSH not available..."
           done; echo "SSH ready!"
-
+          
       - name: 'Deploy Deployment Configuration'
         uses: appleboy/scp-action@master
         with:
           host: ${{ env.INSTANCE_IP }}
-          username: ubuntu
-          password: ${{ secrets.OCI_KEY_FILE }}
+          username: opc
+          key: ${{ secrets.OCI_KEY_FILE }}
           source: "docker-compose.yaml"
           target: "./"
           
