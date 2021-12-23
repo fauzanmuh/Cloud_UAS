@@ -180,3 +180,4 @@ jobs:
             php artisan db:seed --class=UserSeeder
             fi '
  
+ 
