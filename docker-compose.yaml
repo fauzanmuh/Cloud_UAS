@@ -1,0 +1,8 @@
+version: '1.0'
+
+services:
+  system_sales:
+    image: fauzanmuh/uas_cloud
+    container_name: system_sales
+    ports:
+      - 80:80
