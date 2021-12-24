@@ -160,4 +160,5 @@ jobs:
             php artisan db:seed --class=LocationSeeder
             php artisan db:seed --class=UserSeeder
             fi '
+
  
