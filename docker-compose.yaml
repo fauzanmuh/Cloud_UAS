@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   system_sales:
-    image: fauzanmuh/uas_cloud
+    image: fauzanmuh/cloud_uas
     container_name: system_sales
     ports:
       - 80:80
